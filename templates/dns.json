@@ -12,14 +12,20 @@
     "StationeeringDotCom": {
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
-        "Name": { "Ref": "BaseDomainName" }
+        "Name": {
+          "Ref": "BaseDomainName"
+        }
       }
     },
     "LoopbackBestPracticeIPv4": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
-        "HostedZoneName": { "Fn::Sub": "${BaseDomainName}." },
-        "Name": { "Fn::Sub": "localhost.${BaseDomainName}" },
+        "HostedZoneName": {
+          "Fn::Sub": "${BaseDomainName}."
+        },
+        "Name": {
+          "Fn::Sub": "localhost.${BaseDomainName}"
+        },
         "Type": "A",
         "TTL": 900,
         "ResourceRecords": [
@@ -30,8 +36,12 @@
     "LoopbackBestPracticeIPv6": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
-        "HostedZoneName": { "Fn::Sub": "${BaseDomainName}." },
-        "Name": { "Fn::Sub": "localhost.${BaseDomainName}" },
+        "HostedZoneName": {
+          "Fn::Sub": "${BaseDomainName}."
+        },
+        "Name": {
+          "Fn::Sub": "localhost.${BaseDomainName}"
+        },
         "Type": "AAAA",
         "TTL": 900,
         "ResourceRecords": [
@@ -45,7 +55,9 @@
       "Export": {
         "Name": "BaseDomainName"
       },
-      "Value": { "Ref": "BaseDomainName" }
+      "Value": {
+        "Ref": "BaseDomainName"
+      }
     }
   }
 }

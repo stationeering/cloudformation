@@ -1,11 +1,13 @@
 {
-"AWSTemplateFormatVersion": "2010-09-09",
+    "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Storage for website content.",
     "Resources": {
         "Frontend": {
             "Type": "AWS::S3::Bucket",
-            "Properties": {                
-                "BucketName": { "Fn::ImportValue": "BaseDomainName" },
+            "Properties": {
+                "BucketName": {
+                    "Fn::ImportValue": "BaseDomainName"
+                },
                 "VersioningConfiguration": {
                     "Status": "Enabled"
                 }
@@ -14,18 +16,41 @@
         "Data": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName": { "Fn::Sub": [ "data.${Domain}", { "Domain": { "Fn::ImportValue": "BaseDomainName" } } ] },
+                "BucketName": {
+                    "Fn::Sub": [
+                        "data.${Domain}",
+                        {
+                            "Domain": {
+                                "Fn::ImportValue": "BaseDomainName"
+                            }
+                        }
+                    ]
+                },
                 "VersioningConfiguration": {
                     "Status": "Enabled"
                 },
                 "CorsConfiguration": {
                     "CorsRules": [
                         {
-                            "AllowedMethods": [ "GET", "HEAD" ],
+                            "AllowedMethods": [
+                                "GET",
+                                "HEAD"
+                            ],
                             "AllowedOrigins": [
                                 "localhost",
-                                { "Fn::ImportValue": "BaseDomainName" },
-                                { "Fn::Sub": [ "localhost.${Domain}", { "Domain": { "Fn::ImportValue": "BaseDomainName" } } ] }
+                                {
+                                    "Fn::ImportValue": "BaseDomainName"
+                                },
+                                {
+                                    "Fn::Sub": [
+                                        "localhost.${Domain}",
+                                        {
+                                            "Domain": {
+                                                "Fn::ImportValue": "BaseDomainName"
+                                            }
+                                        }
+                                    ]
+                                }
                             ]
                         }
                     ]
@@ -33,17 +58,19 @@
             }
         },
         "CloudFrontOAI": {
-            "Type" : "AWS::CloudFront::CloudFrontOriginAccessIdentity",
-            "Properties" : {
-                "CloudFrontOriginAccessIdentityConfig" : {
+            "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            "Properties": {
+                "CloudFrontOriginAccessIdentityConfig": {
                     "Comment": "CloudFront identity for restricting access to S3 buckets purely to CF principal."
                 }
-            }                            
-        },    
+            }
+        },
         "FrontEndPolicy": {
             "Type": "AWS::S3::BucketPolicy",
             "Properties": {
-                "Bucket" : { "Ref": "Frontend" },
+                "Bucket": {
+                    "Ref": "Frontend"
+                },
                 "PolicyDocument": {
                     "Version": "2008-10-17",
                     "Id": "PolicyForCloudFrontPrivateContent",
@@ -52,10 +79,27 @@
                             "Sid": "1",
                             "Effect": "Allow",
                             "Principal": {
-                                "CanonicalUser": { "Fn::GetAtt": [ "CloudFrontOAI", "S3CanonicalUserId" ] }
+                                "CanonicalUser": {
+                                    "Fn::GetAtt": [
+                                        "CloudFrontOAI",
+                                        "S3CanonicalUserId"
+                                    ]
+                                }
                             },
                             "Action": "s3:GetObject",
-                            "Resource": { "Fn::Sub": [ "${Bucket}/*", { "Bucket": { "Fn::GetAtt": [ "Frontend", "Arn"] } } ] }
+                            "Resource": {
+                                "Fn::Sub": [
+                                    "${Bucket}/*",
+                                    {
+                                        "Bucket": {
+                                            "Fn::GetAtt": [
+                                                "Frontend",
+                                                "Arn"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -64,7 +108,9 @@
         "DataPolicy": {
             "Type": "AWS::S3::BucketPolicy",
             "Properties": {
-                "Bucket" : { "Ref": "Data" },
+                "Bucket": {
+                    "Ref": "Data"
+                },
                 "PolicyDocument": {
                     "Version": "2008-10-17",
                     "Id": "PolicyForCloudFrontPrivateContent",
@@ -73,22 +119,41 @@
                             "Sid": "1",
                             "Effect": "Allow",
                             "Principal": {
-                                "CanonicalUser": { "Fn::GetAtt": [ "CloudFrontOAI", "S3CanonicalUserId" ] }
+                                "CanonicalUser": {
+                                    "Fn::GetAtt": [
+                                        "CloudFrontOAI",
+                                        "S3CanonicalUserId"
+                                    ]
+                                }
                             },
                             "Action": "s3:GetObject",
-                            "Resource": { "Fn::Sub": [ "${Bucket}/*", { "Bucket": { "Fn::GetAtt": [ "Data", "Arn"] } } ] }
+                            "Resource": {
+                                "Fn::Sub": [
+                                    "${Bucket}/*",
+                                    {
+                                        "Bucket": {
+                                            "Fn::GetAtt": [
+                                                "Data",
+                                                "Arn"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
             }
-        }        
+        }
     },
     "Outputs": {
         "CloudFrontOAI": {
             "Export": {
-              "Name": "StationeeringCloudFrontOAI"
+                "Name": "StationeeringCloudFrontOAI"
             },
-            "Value": { "Ref": "CloudFrontOAI" }
-          }
+            "Value": {
+                "Ref": "CloudFrontOAI"
+            }
+        }
     }
 }
