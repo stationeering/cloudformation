@@ -1,0 +1,36 @@
+{
+"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Storage for website content.",
+    "Resources": {
+        "Frontend": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {                
+                "BucketName": { "Fn::ImportValue": "BaseDomainName" },
+                "VersioningConfiguration": {
+                    "Status": "Enabled"
+                }
+            }
+        },
+        "Data": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": { "Fn::Sub": [ "data.${Domain}", { "Domain": { "Fn::ImportValue": "BaseDomainName" } } ] },
+                "VersioningConfiguration": {
+                    "Status": "Enabled"
+                },
+                "CorsConfiguration": {
+                    "CorsRules": [
+                        {
+                            "AllowedMethods": [ "GET", "HEAD" ],
+                            "AllowedOrigins": [
+                                "localhost",
+                                { "Fn::ImportValue": "BaseDomainName" },
+                                { "Fn::Sub": [ "localhost.${Domain}", { "Domain": { "Fn::ImportValue": "BaseDomainName" } } ] }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
