@@ -31,6 +31,56 @@
                     ]
                 }
             }
-        }
+        },
+        "CloudFrontOAI": {
+            "Type" : "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            "Properties" : {
+                "CloudFrontOriginAccessIdentityConfig" : {
+                    "Comment": "CloudFront identity for restricting access to S3 buckets purely to CF principal."
+                }
+            }                            
+        },    
+        "FrontEndPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket" : { "Ref": "Frontend" },
+                "PolicyDocument": {
+                    "Version": "2008-10-17",
+                    "Id": "PolicyForCloudFrontPrivateContent",
+                    "Statement": [
+                        {
+                            "Sid": "1",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "CanonicalUser": { "Fn::GetAtt": [ "CloudFrontOAI", "S3CanonicalUserId" ] }
+                            },
+                            "Action": "s3:GetObject",
+                            "Resource": { "Fn::Sub": [ "${Bucket}/*", { "Bucket": { "Fn::GetAtt": [ "Frontend", "Arn"] } } ] }
+                        }
+                    ]
+                }
+            }
+        },
+        "DataPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket" : { "Ref": "Data" },
+                "PolicyDocument": {
+                    "Version": "2008-10-17",
+                    "Id": "PolicyForCloudFrontPrivateContent",
+                    "Statement": [
+                        {
+                            "Sid": "1",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "CanonicalUser": { "Fn::GetAtt": [ "CloudFrontOAI", "S3CanonicalUserId" ] }
+                            },
+                            "Action": "s3:GetObject",
+                            "Resource": { "Fn::Sub": [ "${Bucket}/*", { "Bucket": { "Fn::GetAtt": [ "Data", "Arn"] } } ] }
+                        }
+                    ]
+                }
+            }
+        }        
     }
 }
