@@ -1,0 +1,51 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Stack for managing domain names used for stationeering.com.",
+  "Parameters": {
+    "BaseDomainName": {
+      "Type": "String",
+      "Default": "stationeering.com",
+      "Description": "Base domain name to use for website."
+    }
+  },
+  "Resources": {
+    "StationeeringDotCom": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "Name": { "Ref": "BaseDomainName" }
+      }
+    },
+    "LoopbackBestPracticeIPv4": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "HostedZoneName": { "Fn::Sub": "${BaseDomainName}." },
+        "Name": { "Fn::Sub": "localhost.${BaseDomainName}" },
+        "Type": "A",
+        "TTL": 900,
+        "ResourceRecords": [
+          "127.0.0.1"
+        ]
+      }
+    },
+    "LoopbackBestPracticeIPv6": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "HostedZoneName": { "Fn::Sub": "${BaseDomainName}." },
+        "Name": { "Fn::Sub": "localhost.${BaseDomainName}" },
+        "Type": "AAAA",
+        "TTL": 900,
+        "ResourceRecords": [
+          "::1"
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ExportDomainName": {
+      "Export": {
+        "Name": "BaseDomainName"
+      },
+      "Value": { "Ref": "BaseDomainName" }
+    }
+  }
+}
