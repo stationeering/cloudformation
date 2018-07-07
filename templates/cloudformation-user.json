@@ -1,0 +1,37 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Stack for managing user, groups and policies which will be used for managing infrastructure.",
+  "Resources": {
+    "CloudFormationUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+          "Groups": [ { "Ref": "CloudFormationGroup" } ]
+      }
+    },
+    "CloudFormationGroup": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+          "arn:aws:iam::aws:policy/CloudFrontFullAccess"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "CloudFormationFullAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [ "cloudformation:*" ],
+                  "Resource": [ "*" ],
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
