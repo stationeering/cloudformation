@@ -1,11 +1,24 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "CloudFront configuration for websites.",
+  "Parameters": {
+    "FrontEndCertificateARN": {
+      "Type": "String",
+      "Default": "arn:aws:acm:us-east-1:432708775807:certificate/e37b362f-4bb0-424f-9e40-163ca164e8da",
+      "Description": "ARN of certificate to protect frontend."
+    },
+    "BackEndCertificateARN": {
+      "Type": "String",
+      "Default": "arn:aws:acm:us-east-1:432708775807:certificate/f052dbe3-fdd8-4337-85ac-2019e0ee39b1",
+      "Description": "ARN of certificate to protect backend."
+    }
+  },
   "Resources": {
     "FrontEndCloudFrontDistribution": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
+          "HttpVersion": "http2",
           "Origins": [
             {
               "DomainName": {
@@ -58,7 +71,10 @@
           },
           "PriceClass": "PriceClass_100",
           "ViewerCertificate": {
-            "CloudFrontDefaultCertificate": "true"
+            "SslSupportMethod": "sni-only",
+            "AcmCertificateArn": {
+              "Ref": "FrontEndCertificateARN"
+            }
           }
         }
       }
@@ -67,6 +83,7 @@
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
+          "HttpVersion": "http2",
           "Origins": [
             {
               "DomainName": {
@@ -126,59 +143,12 @@
           },
           "PriceClass": "PriceClass_100",
           "ViewerCertificate": {
-            "CloudFrontDefaultCertificate": "true"
+            "SslSupportMethod": "sni-only",
+            "AcmCertificateArn": {
+              "Ref": "BackEndCertificateARN"
+            }
           }
         }
-      }
-    },
-    "FrontEndCertificate": {
-      "Type": "AWS::CertificateManager::Certificate",
-      "Properties": {
-        "DomainName": {
-          "Fn::ImportValue": "BaseDomainName"
-        },
-        "DomainValidationOptions": [
-          {
-            "DomainName": {
-              "Fn::ImportValue": "BaseDomainName"
-            },
-            "ValidationDomain": {
-              "Fn::ImportValue": "BaseDomainName"
-            }
-          }
-        ]
-      }
-    },
-    "BackEndCertificate": {
-      "Type": "AWS::CertificateManager::Certificate",
-      "Properties": {
-        "DomainName": {
-          "Fn::Sub": [
-            "data.${Domain}",
-            {
-              "Domain": {
-                "Fn::ImportValue": "BaseDomainName"
-              }
-            }
-          ]
-        },
-        "DomainValidationOptions": [
-          {
-            "DomainName": {
-              "Fn::Sub": [
-                "data.${Domain}",
-                {
-                  "Domain": {
-                    "Fn::ImportValue": "BaseDomainName"
-                  }
-                }
-              ]
-            },
-            "ValidationDomain": {
-              "Fn::ImportValue": "BaseDomainName"
-            }
-          }
-        ]
       }
     }
   }
