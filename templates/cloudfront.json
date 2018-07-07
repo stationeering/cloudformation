@@ -1,52 +1,135 @@
 {
-"AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "CloudFront configuration for websites.",
-    "Metadata": {
-
-    },
-    "Parameters": {
-    
-    },
-    "Mappings": {
-
-    },
-    "Conditions": {
-
-    },
-    "Resources": {
-        "FrontEndCloudFrontDistribution": {
-            "Type": "AWS::CloudFront::Distribution",
-            "Properties": {
-                "DistributionConfig": {
-                    "Origins": [
-                      {
-                        "DomainName": { "Fn::Sub": [ "${Domain}.s3.amazonaws.com", { "Domain": { "Fn::ImportValue": "BaseDomainName" } } ]},
-                        "Id": "FrontEndS3Origin",
-                        "S3OriginConfig": {
-                          "OriginAccessIdentity" : { "Fn::Sub": [ "origin-access-identity/cloudfront/${OAI}", { "OAI": { "Fn::ImportValue": "StationeeringCloudFrontOAI" } } ] }
-                        }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFront configuration for websites.",
+  "Resources": {
+    "FrontEndCloudFrontDistribution": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::Sub": [
+                  "${Domain}.s3.amazonaws.com",
+                  {
+                    "Domain": {
+                      "Fn::ImportValue": "BaseDomainName"
+                    }
+                  }
+                ]
+              },
+              "Id": "FrontEndS3Origin",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Sub": [
+                    "origin-access-identity/cloudfront/${OAI}",
+                    {
+                      "OAI": {
+                        "Fn::ImportValue": "StationeeringCloudFrontOAI"
                       }
-                    ],
-                    "Enabled": "true",
-                    "Comment": "Cloudfront distribution for frontend of website.",
-                    "DefaultRootObject": "index.html",
-                    "Aliases": [ { "Fn::ImportValue": "BaseDomainName" } ],
-                    "DefaultCacheBehavior" : {
-                      "AllowedMethods" : [ "GET", "HEAD", "OPTIONS" ],  
-                      "TargetOriginId" : "FrontEndS3Origin",
-                      "ForwardedValues" : {
-                          "QueryString" : "false",
-                          "Cookies" : { "Forward" : "none" }
-                      },
-                      "ViewerProtocolPolicy" : "redirect-to-https"
-                    },
-                    "PriceClass": "PriceClass_100",
-                    "ViewerCertificate" : { "CloudFrontDefaultCertificate" : "true" }  
+                    }
+                  ]
                 }
+              }
             }
+          ],
+          "Enabled": "true",
+          "Comment": "Cloudfront distribution for frontend of website.",
+          "DefaultRootObject": "index.html",
+          "Aliases": [
+            {
+              "Fn::ImportValue": "BaseDomainName"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ],
+            "TargetOriginId": "FrontEndS3Origin",
+            "ForwardedValues": {
+              "QueryString": "false",
+              "Cookies": {
+                "Forward": "none"
+              }
+            },
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "PriceClass": "PriceClass_100",
+          "ViewerCertificate": {
+            "CloudFrontDefaultCertificate": "true"
+          }
         }
+      }
     },
-    "Outputs": {
-
+    "BackEndCloudFrontDistribution": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::Sub": [
+                  "data.${Domain}.s3.amazonaws.com",
+                  {
+                    "Domain": {
+                      "Fn::ImportValue": "BaseDomainName"
+                    }
+                  }
+                ]
+              },
+              "Id": "BackEndS3Origin",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Sub": [
+                    "origin-access-identity/cloudfront/${OAI}",
+                    {
+                      "OAI": {
+                        "Fn::ImportValue": "StationeeringCloudFrontOAI"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "Enabled": "true",
+          "Comment": "Cloudfront distribution for backend of website.",
+          "DefaultRootObject": "index.html",
+          "Aliases": [
+            {
+              "Fn::Sub": [
+                "data.${Domain}",
+                {
+                  "Domain": {
+                    "Fn::ImportValue": "BaseDomainName"
+                  }
+                }
+              ]
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ],
+            "TargetOriginId": "BackEndS3Origin",
+            "ForwardedValues": {
+              "QueryString": "false",
+              "Cookies": {
+                "Forward": "none"
+              }
+            },
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "PriceClass": "PriceClass_100",
+          "ViewerCertificate": {
+            "CloudFrontDefaultCertificate": "true"
+          }
+        }
+      }
     }
+  }
 }
