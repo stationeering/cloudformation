@@ -82,5 +82,13 @@
                 }
             }
         }        
+    },
+    "Outputs": {
+        "CloudFrontOAI": {
+            "Export": {
+              "Name": "StationeeringCloudFrontOAI"
+            },
+            "Value": { "Ref": "CloudFrontOAI" }
+          }
     }
 }
