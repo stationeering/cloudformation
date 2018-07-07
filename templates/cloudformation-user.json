@@ -18,7 +18,8 @@
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/AmazonS3FullAccess",
           "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
-          "arn:aws:iam::aws:policy/CloudFrontFullAccess"
+          "arn:aws:iam::aws:policy/CloudFrontFullAccess",
+          "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
         ],
         "Policies": [
           {
