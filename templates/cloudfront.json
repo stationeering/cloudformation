@@ -130,6 +130,56 @@
           }
         }
       }
+    },
+    "FrontEndCertificate": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName": {
+          "Fn::ImportValue": "BaseDomainName"
+        },
+        "DomainValidationOptions": [
+          {
+            "DomainName": {
+              "Fn::ImportValue": "BaseDomainName"
+            },
+            "ValidationDomain": {
+              "Fn::ImportValue": "BaseDomainName"
+            }
+          }
+        ]
+      }
+    },
+    "BackEndCertificate": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName": {
+          "Fn::Sub": [
+            "data.${Domain}",
+            {
+              "Domain": {
+                "Fn::ImportValue": "BaseDomainName"
+              }
+            }
+          ]
+        },
+        "DomainValidationOptions": [
+          {
+            "DomainName": {
+              "Fn::Sub": [
+                "data.${Domain}",
+                {
+                  "Domain": {
+                    "Fn::ImportValue": "BaseDomainName"
+                  }
+                }
+              ]
+            },
+            "ValidationDomain": {
+              "Fn::ImportValue": "BaseDomainName"
+            }
+          }
+        ]
+      }
     }
   }
 }
