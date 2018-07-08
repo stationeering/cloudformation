@@ -1,0 +1,77 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Stack for managing user, groups and policies which will be used for deploying the frontend and backend via S3 and CloudFront.",
+  "Resources": {
+    "DeployUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Groups": [
+          {
+            "Ref": "DeployGroup"
+          }
+        ]
+      }
+    },
+    "DeployGroup": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "Policies": [
+          {
+            "PolicyName": "DeployPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "cloudfront:CreateInvalidation"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::ImportValue": "FrontEndCloudFrontARN"
+                    },
+                    {
+                      "Fn::ImportValue": "BackEndCloudFrontARN"
+                    }
+                  ],
+                  "Effect": "Allow"
+                },
+                {
+                  "Action": [
+                    "s3:DeleteObject",
+                    "s3:GetBucketLocation",
+                    "s3:GetObject",
+                    "s3:ListBucket",
+                    "s3:PutObject"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": [
+                        "arn:aws:s3:::${BaseDomainName}/*",
+                        {
+                          "BaseDomainName": {
+                            "Fn::ImportValue": "BaseDomainName"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Sub": [
+                        "arn:aws:s3:::data.${BaseDomainName}/*",
+                        {
+                          "BaseDomainName": {
+                            "Fn::ImportValue": "BaseDomainName"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

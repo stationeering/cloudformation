@@ -6,6 +6,7 @@ CloudFormation used for the AWS infrastructure around stationeering.com, provide
 
 * Ensure you have `awscli` installed.
 * Using the AWS Console, deploy the `cloudformation-user.json` stack as `cloudformation-user`. 
+* Using the AWS Console, deploy the `deploy-user.json` stack as `deploy-user`. 
 * In IAM, find cloudformation user and mint new API credentials.
 * Add credentials and default region to `~/.aws/credentials`.
 * Create main DNS stack with MX records for mail.

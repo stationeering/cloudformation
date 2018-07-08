@@ -214,5 +214,37 @@
         }
       }
     }
+  },
+  "Outputs": {
+    "FrontEndCloudFrontARN": {
+      "Export": {
+        "Name": "FrontEndCloudFrontARN"
+      },
+      "Value": {
+        "Fn::Sub": [
+          "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CFRef}",
+          {
+            "CFRef": {
+              "Ref": "FrontEndCloudFrontDistribution"
+            }
+          }
+        ]
+      }
+    },
+    "BackEndCloudFrontARN": {
+      "Export": {
+        "Name": "BackEndCloudFrontARN"
+      },
+      "Value": {
+        "Fn::Sub": [
+          "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CFRef}",
+          {
+            "CFRef": {
+              "Ref": "BackEndCloudFrontDistribution"
+            }
+          }
+        ]
+      }
+    }
   }
 }
