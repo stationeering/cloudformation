@@ -150,6 +150,69 @@
           }
         }
       }
+    },
+    "FrontEndAlias": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "HostedZoneName": {
+          "Fn::Sub": [
+            "${Domain}.",
+            {
+              "Domain": {
+                "Fn::ImportValue": "BaseDomainName"
+              }
+            }
+          ]
+        },
+        "Name": {
+          "Fn::ImportValue": "BaseDomainName"
+        },
+        "Type": "A",
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "FrontEndCloudFrontDistribution",
+              "DomainName"
+            ]
+          },
+          "HostedZoneId": "Z2FDTNDATAQYW2"
+        }
+      }
+    },
+    "BackEndAlias": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "HostedZoneName": {
+          "Fn::Sub": [
+            "${Domain}.",
+            {
+              "Domain": {
+                "Fn::ImportValue": "BaseDomainName"
+              }
+            }
+          ]
+        },
+        "Name": {
+          "Fn::Sub": [
+            "data.${Domain}",
+            {
+              "Domain": {
+                "Fn::ImportValue": "BaseDomainName"
+              }
+            }
+          ]
+        },
+        "Type": "A",
+        "AliasTarget": {
+          "DNSName": {
+            "Fn::GetAtt": [
+              "FrontEndCloudFrontDistribution",
+              "DomainName"
+            ]
+          },
+          "HostedZoneId": "Z2FDTNDATAQYW2"
+        }
+      }
     }
   }
 }
