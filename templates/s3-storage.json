@@ -100,6 +100,32 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "Sid": "2",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "CanonicalUser": {
+                                    "Fn::GetAtt": [
+                                        "CloudFrontOAI",
+                                        "S3CanonicalUserId"
+                                    ]
+                                }
+                            },
+                            "Action": "s3:ListBucket",
+                            "Resource": {
+                                "Fn::Sub": [
+                                    "${Bucket}",
+                                    {
+                                        "Bucket": {
+                                            "Fn::GetAtt": [
+                                                "Frontend",
+                                                "Arn"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -130,6 +156,32 @@
                             "Resource": {
                                 "Fn::Sub": [
                                     "${Bucket}/*",
+                                    {
+                                        "Bucket": {
+                                            "Fn::GetAtt": [
+                                                "Data",
+                                                "Arn"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "Sid": "2",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "CanonicalUser": {
+                                    "Fn::GetAtt": [
+                                        "CloudFrontOAI",
+                                        "S3CanonicalUserId"
+                                    ]
+                                }
+                            },
+                            "Action": "s3:ListBucket",
+                            "Resource": {
+                                "Fn::Sub": [
+                                    "${Bucket}",
                                     {
                                         "Bucket": {
                                             "Fn::GetAtt": [
