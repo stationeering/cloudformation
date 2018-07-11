@@ -22,6 +22,7 @@ AWS_DEFAULT_REGION=us-east-1 AWS_PROFILE=cloudformation aws cloudformation creat
 ```
 AWS_PROFILE=cloudformation aws cloudformation create-stack --stack-name s3-storage --template-body file://templates/s3-storage.json
 AWS_PROFILE=cloudformation aws cloudformation create-stack --stack-name cloudfront --template-body file://templates/cloudfront.json
+AWS_PROFILE=cloudformation aws cloudformation create-stack --stack-name=containers --template-body=file://templates/containers.json --capabilities CAPABILITY_IAM
 ```
 
 ## Updating
@@ -32,4 +33,5 @@ AWS_DEFAULT_REGION=us-east-1 AWS_PROFILE=cloudformation aws cloudformation updat
 AWS_PROFILE=cloudformation aws cloudformation update-stack --stack-name dns --template-body file://templates/dns.json
 AWS_PROFILE=cloudformation aws cloudformation update-stack --stack-name s3-storage --template-body file://templates/s3-storage.json
 AWS_PROFILE=cloudformation aws cloudformation update-stack --stack-name cloudfront --template-body file://templates/cloudfront.json
+AWS_PROFILE=cloudformation aws cloudformation update-stack --stack-name=containers --template-body=file://templates/containers.json --capabilities CAPABILITY_IAM
 ```

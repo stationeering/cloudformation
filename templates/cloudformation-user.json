@@ -19,7 +19,9 @@
           "arn:aws:iam::aws:policy/AmazonS3FullAccess",
           "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
           "arn:aws:iam::aws:policy/CloudFrontFullAccess",
-          "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
+          "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
+          "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+          "arn:aws:iam::aws:policy/IAMFullAccess"
         ],
         "Policies": [
           {
@@ -30,6 +32,23 @@
                 {
                   "Action": [
                     "cloudformation:*"
+                  ],
+                  "Resource": [
+                    "*"
+                  ],
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ECSFullAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "ecs:*"
                   ],
                   "Resource": [
                     "*"
