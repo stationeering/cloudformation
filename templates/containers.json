@@ -5,7 +5,7 @@
         "Registry": {
             "Type": "AWS::ECR::Repository",
             "Properties": {
-                "RepositoryName": "stationeers-backend"
+                "RepositoryName": "stationeering-backend"
             }
         },
         "Cluster": {
