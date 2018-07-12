@@ -38,46 +38,10 @@
                     "s3:ListObjects"
                   ],
                   "Resource": [
-                    {
-                      "Fn::Sub": [
-                        "arn:aws:s3:::${BaseDomainName}/*",
-                        {
-                          "BaseDomainName": {
-                            "Fn::ImportValue": "BaseDomainName"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "Fn::Sub": [
-                        "arn:aws:s3:::data.${BaseDomainName}/*",
-                        {
-                          "BaseDomainName": {
-                            "Fn::ImportValue": "BaseDomainName"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "Fn::Sub": [
-                        "arn:aws:s3:::${BaseDomainName}",
-                        {
-                          "BaseDomainName": {
-                            "Fn::ImportValue": "BaseDomainName"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "Fn::Sub": [
-                        "arn:aws:s3:::data.${BaseDomainName}",
-                        {
-                          "BaseDomainName": {
-                            "Fn::ImportValue": "BaseDomainName"
-                          }
-                        }
-                      ]
-                    }
+                    "arn:aws:s3:::stationeering-app",
+                    "arn:aws:s3:::stationeering-app/*",
+                    "arn:aws:s3:::stationeering-data",
+                    "arn:aws:s3:::stationeering-data/*"
                   ],
                   "Effect": "Allow"
                 }
@@ -112,7 +76,9 @@
                     "ecr:CompleteLayerUpload"
                   ],
                   "Resource": [
-                    { "Fn::Sub": "arn:aws:ecr::${AWS::AccountId}:repository/stationeering-backend" }
+                    {
+                      "Fn::Sub": "arn:aws:ecr::${AWS::AccountId}:repository/stationeering-backend"
+                    }
                   ]
                 }
               ]
