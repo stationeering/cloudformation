@@ -2,12 +2,6 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Stack for ECS and ECR for running backend jobs.",
     "Resources": {
-        "Registry": {
-            "Type": "AWS::ECR::Repository",
-            "Properties": {
-                "RepositoryName": "stationeering-backend"
-            }
-        },
         "Cluster": {
             "Type": "AWS::ECS::Cluster",
             "Properties": {
