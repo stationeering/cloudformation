@@ -170,6 +170,25 @@
                                 }
                             ]
                         }
+                    },
+                    {
+                        "PolicyName": "LoggingPolicy",
+                        "PolicyDocument": {
+                            "Id": "LoggingPolicy",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "arn:aws:logs:*:*:*"
+                                    ]
+                                }
+                            ],
+                            "Version": "2012-10-17"
+                        }
                     }
                 ]
             }
@@ -188,10 +207,61 @@
                     "S3Bucket": {
                         "Fn::ImportValue": "LambdaBucket"
                     },
-                    "S3Key": "fetcher-invoker-v02.zip"
+                    "S3Key": "fetcher-invoker-v03.zip"
                 },
                 "Runtime": "nodejs8.10",
                 "Timeout": "5"
+            }
+        },
+        "LambdaLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Sub": [
+                        "/aws/lambda/${functionName}",
+                        {
+                            "functionName": {
+                                "Ref": "TaskInvokerLambda"
+                            }
+                        }
+                    ]
+                },
+                "RetentionInDays": 7
+            }
+        },
+        "LambdaSchedule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "ScheduledRule",
+                "ScheduleExpression": "cron(5 * * * ? *)",
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "TaskInvokerLambda",
+                                "Arn"
+                            ]
+                        },
+                        "Id": "TargetFunctionV1"
+                    }
+                ]
+            }
+        },
+        "LambdaSchedulePermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {
+                    "Ref": "TaskInvokerLambda"
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "events.amazonaws.com",
+                "SourceArn": {
+                    "Fn::GetAtt": [
+                        "LambdaSchedule",
+                        "Arn"
+                    ]
+                }
             }
         }
     },
