@@ -41,7 +41,9 @@
                     "arn:aws:s3:::stationeering-app",
                     "arn:aws:s3:::stationeering-app/*",
                     "arn:aws:s3:::stationeering-data",
-                    "arn:aws:s3:::stationeering-data/*"
+                    "arn:aws:s3:::stationeering-data/*",
+                    "arn:aws:s3:::stationeering-lambda",
+                    "arn:aws:s3:::stationeering-lambda/*"
                   ],
                   "Effect": "Allow"
                 }
