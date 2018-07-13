@@ -22,7 +22,8 @@
           "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
           "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
           "arn:aws:iam::aws:policy/IAMFullAccess",
-          "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+          "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess",
+          "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
         ],
         "Policies": [
           {
@@ -53,6 +54,23 @@
                   ],
                   "Resource": [
                     "*"
+                  ],
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "GetLambdaCodeFromS3",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": [
+                    "arn:aws:s3:::stationeering-lambda/*"
                   ],
                   "Effect": "Allow"
                 }
