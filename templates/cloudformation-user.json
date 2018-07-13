@@ -21,7 +21,8 @@
           "arn:aws:iam::aws:policy/CloudFrontFullAccess",
           "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
           "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
-          "arn:aws:iam::aws:policy/IAMFullAccess"
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
         ],
         "Policies": [
           {

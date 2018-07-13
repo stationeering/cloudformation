@@ -53,10 +53,13 @@
     "Outputs": {
         "ECSTaskExecutionRole": {
             "Export": {
-                "Name": "ECSTaskExecutionRole"
+                "Name": "ECSTaskExecutionRoleARN"
             },
             "Value": {
-                "Ref": "ClusterTaskExecutionRole"
+                "Fn::GetAtt": [
+                    "ClusterTaskExecutionRole",
+                    "Arn"
+                ]
             }
         }
     }
