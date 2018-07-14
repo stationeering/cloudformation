@@ -17,6 +17,28 @@
       "Properties": {
         "Policies": [
           {
+            "PolicyName": "WriteSteamCredentialsToSSM",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:PutParameter"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/steam/username"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/steam/password"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
             "PolicyName": "DeployToS3",
             "PolicyDocument": {
               "Version": "2012-10-17",

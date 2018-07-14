@@ -61,6 +61,14 @@
                     "Arn"
                 ]
             }
+        },
+        "BackEndClusterName": {
+            "Export": {
+                "Name": "BackEndClusterName"
+            },
+            "Value": {
+                "Ref": "Cluster"
+            }
         }
     }
 }

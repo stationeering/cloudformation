@@ -17,6 +17,98 @@
                 }
             }
         },
+        "BackendFetcherTestUser": {
+            "Type": "AWS::IAM::User"
+        },
+        "S3Policy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "Roles": [
+                    {
+                        "Ref": "FetcherTaskRole"
+                    }
+                ],
+                "Users": [
+                    {
+                        "Ref": "BackendFetcherTestUser"
+                    }
+                ],
+                "PolicyName": "PermitS3Sync",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "s3:DeleteObject",
+                                "s3:GetBucketLocation",
+                                "s3:GetObject",
+                                "s3:ListBucket",
+                                "s3:PutObject",
+                                "s3:ListObjects"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::Sub": [
+                                        "arn:aws:s3:::${BucketName}",
+                                        {
+                                            "BucketName": {
+                                                "Ref": "S3Bucket"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Fn::Sub": [
+                                        "arn:aws:s3:::${BucketName}/*",
+                                        {
+                                            "BucketName": {
+                                                "Ref": "S3Bucket"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        }
+                    ]
+                }
+            }
+        },
+        "SSMCredentialPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "Roles": [
+                    {
+                        "Ref": "FetcherTaskRole"
+                    }
+                ],
+                "Users": [
+                    {
+                        "Ref": "BackendFetcherTestUser"
+                    }
+                ],
+                "PolicyName": "GetSteamCredentialsFromSSM",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "ssm:GetParameter*"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/steam/username"
+                                },
+                                {
+                                    "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/steam/password"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
         "FetcherTaskRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -33,50 +125,7 @@
                         }
                     ]
                 },
-                "Path": "/",
-                "Policies": [
-                    {
-                        "PolicyName": "PermitS3Sync",
-                        "PolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Action": [
-                                        "s3:DeleteObject",
-                                        "s3:GetBucketLocation",
-                                        "s3:GetObject",
-                                        "s3:ListBucket",
-                                        "s3:PutObject",
-                                        "s3:ListObjects"
-                                    ],
-                                    "Resource": [
-                                        {
-                                            "Fn::Sub": [
-                                                "arn:aws:s3:::${BucketName}",
-                                                {
-                                                    "BucketName": {
-                                                        "Ref": "S3Bucket"
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "Fn::Sub": [
-                                                "arn:aws:s3:::${BucketName}/*",
-                                                {
-                                                    "BucketName": {
-                                                        "Ref": "S3Bucket"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "Effect": "Allow"
-                                }
-                            ]
-                        }
-                    }
-                ]
+                "Path": "/"
             }
         },
         "ECSTask": {
@@ -153,7 +202,7 @@
                 "Path": "/",
                 "Policies": [
                     {
-                        "PolicyName": "PermitS3Sync",
+                        "PolicyName": "RunTask",
                         "PolicyDocument": {
                             "Version": "2012-10-17",
                             "Statement": [
@@ -165,6 +214,23 @@
                                     "Resource": [
                                         {
                                             "Ref": "ECSTask"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "iam:PassRole"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::ImportValue": "ECSTaskExecutionRoleARN"
+                                        },
+                                        {
+                                            "Fn::GetAtt": [
+                                                "FetcherTaskRole",
+                                                "Arn"
+                                            ]
                                         }
                                     ]
                                 }
@@ -207,7 +273,7 @@
                     "S3Bucket": {
                         "Fn::ImportValue": "LambdaBucket"
                     },
-                    "S3Key": "fetcher-invoker-v03.zip"
+                    "S3Key": "ecsinvoker-v05.zip"
                 },
                 "Runtime": "nodejs8.10",
                 "Timeout": "5"
@@ -243,7 +309,23 @@
                                 "Arn"
                             ]
                         },
-                        "Id": "TargetFunctionV1"
+                        "Id": "TargetFunctionV1",
+                        "Input": {
+                            "Fn::Sub": [
+                                "{ \"task\": \"${task}\", \"cluster\": \"${cluster}\", \"subnets\": [ \"${subnet1a}\", \"${subnet1b}\", \"${subnet1c}\" ] }",
+                                {
+                                    "task": {
+                                        "Ref": "ECSTask"
+                                    },
+                                    "cluster": {
+                                        "Fn::ImportValue": "BackEndClusterName"
+                                    },
+                                    "subnet1a": "subnet-10bd2f58",
+                                    "subnet1b": "subnet-ddb27e87",
+                                    "subnet1c": "subnet-d7ee6cb1"
+                                }
+                            ]
+                        }
                     }
                 ]
             }
