@@ -273,7 +273,7 @@
                     "S3Bucket": {
                         "Fn::ImportValue": "LambdaBucket"
                     },
-                    "S3Key": "ecsinvoker-v05.zip"
+                    "S3Key": "ecsinvoker-v06.zip"
                 },
                 "Runtime": "nodejs8.10",
                 "Timeout": "5"
