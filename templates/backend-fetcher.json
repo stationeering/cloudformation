@@ -588,16 +588,25 @@
             }
         },
         "VersionNotificationTopicArn": {
+            "Export": {
+                "Name": "VersionNotificationTopicArn"
+            },
             "Value": {
                 "Ref": "VersionNotificationTopic"
             }
         },
         "GameDataNotificationTopicArn": {
+            "Export": {
+                "Name": "GameDataNotificationTopicArn"
+            },
             "Value": {
                 "Ref": "GameDataNotificationTopic"
             }
         },
         "LanguageNotificationTopicArn": {
+            "Export": {
+                "Name": "LanguageNotificationTopicArn"
+            },
             "Value": {
                 "Ref": "LanguageNotificationTopic"
             }
