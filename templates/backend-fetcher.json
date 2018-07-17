@@ -14,8 +14,116 @@
                 "BucketName": "stationeering-gamedata",
                 "VersioningConfiguration": {
                     "Status": "Enabled"
+                },
+                "NotificationConfiguration": {
+                    "TopicConfigurations": [
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Topic": {
+                                "Ref": "VersionNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "suffix",
+                                            "Value": "version.ini"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Topic": {
+                                "Ref": "GameDataNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "public/rocketstation_Data/StreamingAssets/Data"
+                                        },
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".xml"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Topic": {
+                                "Ref": "GameDataNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "beta/rocketstation_Data/StreamingAssets/Data"
+                                        },
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".xml"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Topic": {
+                                "Ref": "LanguageNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "public/rocketstation_Data/StreamingAssets/Language"
+                                        },
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".xml"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Topic": {
+                                "Ref": "LanguageNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "beta/rocketstation_Data/StreamingAssets/Language"
+                                        },
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".xml"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
                 }
-            }
+            },
+            "DependsOn": [
+                "VersionNotificationTopic",
+                "VersionNotificationTopicPolicy",
+                "GameDataNotificationTopic",
+                "GameDataNotificationTopicPolicy",
+                "LanguageNotificationTopic",
+                "LanguageNotificationTopicPolicy"
+            ]
         },
         "BackendFetcherTestUser": {
             "Type": "AWS::IAM::User"
@@ -344,6 +452,129 @@
                         "Arn"
                     ]
                 }
+            }
+        },
+        "VersionNotificationTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "TopicName": "StationeersVersionChangeNotification"
+            }
+        },
+        "VersionNotificationTopicPolicy": {
+            "Type": "AWS::SNS::TopicPolicy",
+            "DependsOn": [
+                "VersionNotificationTopic"
+            ],
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "VersionNotificationTopicPolicy",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "Statement-id",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "*"
+                            },
+                            "Action": "sns:Publish",
+                            "Resource": {
+                                "Ref": "VersionNotificationTopic"
+                            },
+                            "Condition": {
+                                "ArnLike": {
+                                    "aws:SourceArn": "arn:aws:s3:::stationeering-gamedata"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Topics": [
+                    {
+                        "Ref": "VersionNotificationTopic"
+                    }
+                ]
+            }
+        },
+        "GameDataNotificationTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "TopicName": "StationeersDataChangeNotification"
+            }
+        },
+        "GameDataNotificationTopicPolicy": {
+            "Type": "AWS::SNS::TopicPolicy",
+            "DependsOn": [
+                "GameDataNotificationTopic"
+            ],
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "GameDataNotificationTopicPolicy",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "Statement-id",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "*"
+                            },
+                            "Action": "sns:Publish",
+                            "Resource": {
+                                "Ref": "GameDataNotificationTopic"
+                            },
+                            "Condition": {
+                                "ArnLike": {
+                                    "aws:SourceArn": "arn:aws:s3:::stationeering-gamedata"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Topics": [
+                    {
+                        "Ref": "GameDataNotificationTopic"
+                    }
+                ]
+            }
+        },
+        "LanguageNotificationTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "TopicName": "StationeersLanguageChangeNotification"
+            }
+        },
+        "LanguageNotificationTopicPolicy": {
+            "Type": "AWS::SNS::TopicPolicy",
+            "DependsOn": [
+                "LanguageNotificationTopic"
+            ],
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "LanguageNotificationTopicPolicy",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "Statement-id",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "*"
+                            },
+                            "Action": "sns:Publish",
+                            "Resource": {
+                                "Ref": "LanguageNotificationTopic"
+                            },
+                            "Condition": {
+                                "ArnLike": {
+                                    "aws:SourceArn": "arn:aws:s3:::stationeering-gamedata"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Topics": [
+                    {
+                        "Ref": "LanguageNotificationTopic"
+                    }
+                ]
             }
         }
     },
