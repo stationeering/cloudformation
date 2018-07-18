@@ -24,13 +24,36 @@
                 "HEAD"
               ],
               "AllowedOrigins": [
-                "localhost",
-                {
-                  "Fn::ImportValue": "BaseDomainName"
-                },
+                "http://localhost:3000"
+              ]
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD"
+              ],
+              "AllowedOrigins": [
                 {
                   "Fn::Sub": [
-                    "localhost.${Domain}",
+                    "https://${Domain}",
+                    {
+                      "Domain": {
+                        "Fn::ImportValue": "BaseDomainName"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD"
+              ],
+              "AllowedOrigins": [
+                {
+                  "Fn::Sub": [
+                    "https://localhost.${Domain}",
                     {
                       "Domain": {
                         "Fn::ImportValue": "BaseDomainName"
@@ -172,7 +195,10 @@
               "QueryString": "false",
               "Cookies": {
                 "Forward": "none"
-              }
+              },
+              "Headers": [
+                "Origin"
+              ]
             },
             "ViewerProtocolPolicy": "redirect-to-https"
           },
@@ -227,7 +253,9 @@
       "Export": {
         "Name": "FrontendDataBucket"
       },
-      "Value": { "Ref": "S3Bucket" }
+      "Value": {
+        "Ref": "S3Bucket"
+      }
     }
   }
 }
