@@ -221,5 +221,13 @@
         }
       }
     }
+  },
+  "Outputs": {
+    "FrontendDataBucket": {
+      "Export": {
+        "Name": "FrontendDataBucket"
+      },
+      "Value": { "Ref": "S3Bucket" }
+    }
   }
 }
