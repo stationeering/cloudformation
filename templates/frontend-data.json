@@ -53,7 +53,7 @@
               "AllowedOrigins": [
                 {
                   "Fn::Sub": [
-                    "https://localhost.${Domain}",
+                    "http://dev.${Domain}:3000",
                     {
                       "Domain": {
                         "Fn::ImportValue": "BaseDomainName"
