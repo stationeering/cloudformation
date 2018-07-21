@@ -24,7 +24,8 @@
           "arn:aws:iam::aws:policy/IAMFullAccess",
           "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess",
           "arn:aws:iam::aws:policy/AWSLambdaFullAccess",
-          "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+          "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+          "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
         ],
         "Policies": [
           {

@@ -5,7 +5,10 @@
         "ECRRepository": {
             "Type": "AWS::ECR::Repository",
             "Properties": {
-                "RepositoryName": "backend/fetcher"
+                "RepositoryName": "backend/fetcher",
+                "LifecyclePolicy": {
+                    "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":10,\"description\":\"Remove old.\",\"selection\":{\"tagStatus\":\"untagged\",\"countType\":\"imageCountMoreThan\",\"countNumber\":4},\"action\":{\"type\":\"expire\"}}]}"
+                }
             }
         },
         "S3Bucket": {
