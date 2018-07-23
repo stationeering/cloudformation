@@ -230,7 +230,8 @@
             "Type": "AWS::SQS::Queue",
             "Properties": {
                 "DelaySeconds": 60,
-                "VisibilityTimeout": 60
+                "VisibilityTimeout": 60,
+                "ReceiveMessageWaitTimeSeconds": 20
             }
         },        
         "RenderLambdaExecutionRole": {
