@@ -77,6 +77,46 @@
                             }
                         },
                         {
+                            "Event": "s3:ObjectRemoved:*",
+                            "Topic": {
+                                "Ref": "GameDataNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "public/rocketstation_Data/StreamingAssets/Data"
+                                        },
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".xml"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Event": "s3:ObjectRemoved:*",
+                            "Topic": {
+                                "Ref": "GameDataNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "beta/rocketstation_Data/StreamingAssets/Data"
+                                        },
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".xml"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
                             "Event": "s3:ObjectCreated:*",
                             "Topic": {
                                 "Ref": "LanguageNotificationTopic"
