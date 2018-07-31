@@ -109,6 +109,26 @@
               ],
               "Version": "2012-10-17"
             }
+          },
+          {
+            "PolicyName": "SNSPolicy",
+            "PolicyDocument": {
+              "Id": "SNSPolicy",
+              "Statement": [
+                {
+                  "Action": [
+                    "sns:Publish"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::ImportValue": "ExternalNotificationArn"
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            }
           }
         ]
       }
@@ -130,7 +150,14 @@
           "S3Key": "version-parser-v01.zip"
         },
         "Runtime": "nodejs8.10",
-        "Timeout": "300"
+        "Timeout": "300",
+        "Environment": {
+          "Variables": {
+            "ExternalNotificationTopicArn": {
+              "Fn::ImportValue": "ExternalNotificationArn"
+            }
+          }
+        }
       }
     },
     "LambdaLogGroup": {
