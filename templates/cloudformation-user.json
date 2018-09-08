@@ -29,6 +29,23 @@
         ],
         "Policies": [
           {
+            "PolicyName": "APIGatewayFullAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "apigateway:*"
+                  ],
+                  "Resource": [
+                    "*"
+                  ],
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          },
+          {
             "PolicyName": "CloudFormationFullAccess",
             "PolicyDocument": {
               "Version": "2012-10-17",

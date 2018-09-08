@@ -70,6 +70,39 @@
           }
         ]
       }
+    },
+    "APICertificate": {
+      "Condition": "InUsEast1",
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName": {
+          "Fn::Sub": [
+            "api.${Domain}",
+            {
+              "Domain": {
+                "Ref": "BaseDomainName"
+              }
+            }
+          ]
+        },
+        "DomainValidationOptions": [
+          {
+            "DomainName": {
+              "Fn::Sub": [
+                "api.${Domain}",
+                {
+                  "Domain": {
+                    "Ref": "BaseDomainName"
+                  }
+                }
+              ]
+            },
+            "ValidationDomain": {
+              "Ref": "BaseDomainName"
+            }
+          }
+        ]
+      }
     }
   }
 }
