@@ -97,6 +97,7 @@
       "Properties": {
         "DistributionConfig": {
           "HttpVersion": "http2",
+          "IPV6Enabled": true,
           "Origins": [
             {
               "DomainName": {
@@ -141,7 +142,8 @@
                 "Forward": "none"
               }
             },
-            "ViewerProtocolPolicy": "redirect-to-https"
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "Compress": true
           },
           "PriceClass": "PriceClass_100",
           "ViewerCertificate": {
