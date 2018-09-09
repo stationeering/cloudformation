@@ -349,6 +349,11 @@
               "ResponseTemplates": {
                 "application/json": "$input.json('$.body')"
               },
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
               "StatusCode": 200
             },
             {
@@ -356,12 +361,22 @@
               "ResponseTemplates": {
                 "application/json": "{}"
               },
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
               "StatusCode": 404
             },
             {
               "SelectionPattern": "^Persistence Failure.*",
               "ResponseTemplates": {
                 "application/json": "{}"
+              },
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               },
               "StatusCode": 500
             }
@@ -387,17 +402,32 @@
                 "Ref": "PermalinkModel"
               }
             },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
             "StatusCode": 200
           },
           {
             "ResponseModels": {
               "application/json": "Empty"
             },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
             "StatusCode": 404
           },
           {
             "ResponseModels": {
               "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true
             },
             "StatusCode": 500
           }
@@ -437,12 +467,22 @@
               "ResponseTemplates": {
                 "application/json": "$input.json('$.body')"
               },
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
               "StatusCode": 201
             },
             {
               "SelectionPattern": "^Persistence Failure.*",
               "ResponseTemplates": {
                 "application/json": "{}"
+              },
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               },
               "StatusCode": 500
             }
@@ -468,11 +508,21 @@
                 "Ref": "PermalinkCreateResponseModel"
               }
             },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
             "StatusCode": 201
           },
           {
             "ResponseModels": {
               "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true
             },
             "StatusCode": 500
           }
