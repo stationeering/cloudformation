@@ -464,7 +464,7 @@
             "Type": "AWS::Events::Rule",
             "Properties": {
                 "Description": "ScheduledRule",
-                "ScheduleExpression": "cron(5 * * * ? *)",
+                "ScheduleExpression": "cron(5,35 * * * ? *)",
                 "State": "ENABLED",
                 "Targets": [
                     {
