@@ -574,6 +574,53 @@
           ]
         }
       }
+    },
+    "PermalinkPublishCORSOptionMethod": {
+      "DependsOn": "PermalinkPublishLambdaPermission",
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "Type": "MOCK",
+          "IntegrationResponses": [
+            {
+              "ResponseTemplates": {
+                "application/json": ""
+              },
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "StatusCode": 200
+            }
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{ \"statusCode\": 200 }"
+          }
+        },
+        "ResourceId": {
+          "Ref": "PermalinkResource"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "StationeeringAPI"
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "StatusCode": 200
+          }
+        ]
+      }
     }
   },
   "Outputs": {}
