@@ -119,6 +119,26 @@
                         {
                             "Event": "s3:ObjectCreated:*",
                             "Topic": {
+                                "Ref": "GameDataNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "beta/rocketstation_Data/Managed"
+                                        },
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".dll"
+                                        }
+                                    ]
+                                }
+                            }
+                        },                        
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Topic": {
                                 "Ref": "LanguageNotificationTopic"
                             },
                             "Filter": {
