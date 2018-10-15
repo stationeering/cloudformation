@@ -135,7 +135,7 @@
                                     ]
                                 }
                             }
-                        },                        
+                        },
                         {
                             "Event": "s3:ObjectCreated:*",
                             "Topic": {
@@ -440,6 +440,27 @@
                             ],
                             "Version": "2012-10-17"
                         }
+                    },
+                    {
+                        "PolicyName": "SSMAccess",
+                        "PolicyDocument": {
+                            "Id": "SSMAccess",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ssm:PutParameter",
+                                        "ssm:GetParameter*"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::Sub": "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/fetcher/last_poll"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "Version": "2012-10-17"
+                        }
                     }
                 ]
             }
@@ -461,7 +482,20 @@
                     "S3Key": "ecsinvoker-v06.zip"
                 },
                 "Runtime": "nodejs8.10",
-                "Timeout": "5"
+                "Timeout": "5",
+                "Environment": {
+                    "Variables": {
+                        "task": {
+                            "Ref": "ECSTask"
+                        },
+                        "cluster": {
+                            "Fn::ImportValue": "BackEndClusterName"
+                        },
+                        "subnet1a": "subnet-10bd2f58",
+                        "subnet1b": "subnet-ddb27e87",
+                        "subnet1c": "subnet-d7ee6cb1"
+                    }
+                }
             }
         },
         "LambdaLogGroup": {
@@ -484,7 +518,7 @@
             "Type": "AWS::Events::Rule",
             "Properties": {
                 "Description": "ScheduledRule",
-                "ScheduleExpression": "cron(5,35 * * * ? *)",
+                "ScheduleExpression": "rate(5 minutes)",
                 "State": "ENABLED",
                 "Targets": [
                     {
@@ -495,22 +529,7 @@
                             ]
                         },
                         "Id": "TargetFunctionV1",
-                        "Input": {
-                            "Fn::Sub": [
-                                "{ \"task\": \"${task}\", \"cluster\": \"${cluster}\", \"subnets\": [ \"${subnet1a}\", \"${subnet1b}\", \"${subnet1c}\" ] }",
-                                {
-                                    "task": {
-                                        "Ref": "ECSTask"
-                                    },
-                                    "cluster": {
-                                        "Fn::ImportValue": "BackEndClusterName"
-                                    },
-                                    "subnet1a": "subnet-10bd2f58",
-                                    "subnet1b": "subnet-ddb27e87",
-                                    "subnet1c": "subnet-d7ee6cb1"
-                                }
-                            ]
-                        }
+                        "Input": "{ \"interval\": 1500000 }"
                     }
                 ]
             }
