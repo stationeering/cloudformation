@@ -706,6 +706,17 @@
             "Value": {
                 "Ref": "LanguageNotificationTopic"
             }
+        },
+        "FetcherInvokeLambdaArn": {
+            "Export": {
+                "Name": "FetcherInvokeLambdaArn"
+            },            
+            "Value": {
+                "Fn::GetAtt": [
+                    "TaskInvokerLambda",
+                    "Arn"
+                ]
+            }
         }
     }
 }

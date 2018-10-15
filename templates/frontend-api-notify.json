@@ -58,6 +58,23 @@
                 }
               ]
             }
+          },
+          {
+            "PolicyName": "AllowNotifierToInvokeFetcher",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:InvokeFunction"
+                  ],
+                  "Resource": {
+                    "Fn::ImportValue": "FetcherInvokeLambdaArn"
+                  }
+                }
+              ]
+            }
           }
         ]
       }
@@ -79,7 +96,14 @@
           "S3Key": "notify-v01.zip"
         },
         "Runtime": "nodejs8.10",
-        "Timeout": "300"
+        "Timeout": "300",
+        "Environment": {
+          "Variables": {
+            "FetcherInvokerARN": {
+              "Fn::ImportValue": "FetcherInvokeLambdaArn"
+            }
+          }
+        }
       }
     },
     "UpdateNotifyLambdaLogGroup": {
