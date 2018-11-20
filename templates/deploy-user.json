@@ -65,7 +65,9 @@
                     "arn:aws:s3:::stationeering-data",
                     "arn:aws:s3:::stationeering-data/*",
                     "arn:aws:s3:::stationeering-lambda",
-                    "arn:aws:s3:::stationeering-lambda/*"
+                    "arn:aws:s3:::stationeering-lambda/*",
+                    "arn:aws:s3:::stationeering-exfiltration-agent",
+                    "arn:aws:s3:::stationeering-exfiltration-agent/*"
                   ],
                   "Effect": "Allow"
                 }
@@ -105,6 +107,9 @@
                     },
                     {
                       "Fn::Sub": "arn:aws:ecr:eu-west-1:${AWS::AccountId}:repository/decompiler/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:ecr:eu-west-1:${AWS::AccountId}:repository/exfiltration/*"
                     }
                   ]
                 }

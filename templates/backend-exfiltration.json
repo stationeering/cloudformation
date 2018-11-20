@@ -1,0 +1,189 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Stack for the exfiltration of game data from a running instance.",
+    "Resources": {
+        "ECRRepository": {
+            "Type": "AWS::ECR::Repository",
+            "Properties": {
+                "RepositoryName": "backend/exfiltration",
+                "LifecyclePolicy": {
+                    "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":10,\"description\":\"Remove old.\",\"selection\":{\"tagStatus\":\"untagged\",\"countType\":\"imageCountMoreThan\",\"countNumber\":4},\"action\":{\"type\":\"expire\"}}]}"
+                }
+            }
+        },
+        "AgentS3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "stationeering-exfiltration-agent",
+                "VersioningConfiguration": {
+                    "Status": "Enabled"
+                }                
+            }
+        },
+        "DataS3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "stationeering-exfiltration-data",
+                "VersioningConfiguration": {
+                    "Status": "Enabled"
+                }                
+            }
+        },
+        "S3Policy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "Roles": [
+                    {
+                        "Ref": "ExfiltrationTaskRole"
+                    }
+                ],
+                "PolicyName": "PermitS3Sync",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "s3:DeleteObject",
+                                "s3:GetBucketLocation",
+                                "s3:GetObject",
+                                "s3:ListBucket",
+                                "s3:PutObject",
+                                "s3:ListObjects"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::Sub": [
+                                        "arn:aws:s3:::${BucketName}",
+                                        {
+                                            "BucketName": {
+                                                "Ref": "DataS3Bucket"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Fn::Sub": [
+                                        "arn:aws:s3:::${BucketName}/*",
+                                        {
+                                            "BucketName": {
+                                                "Ref": "DataS3Bucket"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        },
+                        {
+                            "Action": [
+                                "s3:GetBucketLocation",
+                                "s3:GetObject",
+                                "s3:ListBucket",
+                                "s3:ListObjects"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::Sub": [
+                                        "arn:aws:s3:::${BucketName}",
+                                        {
+                                            "BucketName": {
+                                                "Ref": "AgentS3Bucket"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Fn::Sub": [
+                                        "arn:aws:s3:::${BucketName}/*",
+                                        {
+                                            "BucketName": {
+                                                "Ref": "AgentS3Bucket"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        }
+                    ]
+                }
+            }
+        },
+        "ExfiltrationTaskRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "ECSAssume",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/"
+            }
+        },
+        "ECSTask": {
+            "Type": "AWS::ECS::TaskDefinition",
+            "Properties": {
+                "Cpu": "512",
+                "Memory": "1.0GB",
+                "ExecutionRoleArn": {
+                    "Fn::ImportValue": "ECSTaskExecutionRoleARN"
+                },
+                "TaskRoleArn": {
+                    "Fn::GetAtt": [
+                        "ExfiltrationTaskRole",
+                        "Arn"
+                    ]
+                },
+                "NetworkMode": "awsvpc",
+                "RequiresCompatibilities": [
+                    "FARGATE"
+                ],
+                "ContainerDefinitions": [
+                    {
+                        "Memory": 512,
+                        "Essential": true,
+                        "Image": {
+                            "Fn::Sub": "${AWS::AccountId}.dkr.ecr.eu-west-1.amazonaws.com/backend/exfiltration:latest"
+                        },
+                        "LogConfiguration": {
+                            "LogDriver": "awslogs",
+                            "Options": {
+                                "awslogs-group": "exfiltration",
+                                "awslogs-region": {
+                                    "Ref": "AWS::Region"
+                                },
+                                "awslogs-stream-prefix": "exfiltration"
+                            }
+                        },
+                        "Name": "exfiltration"
+                    }
+                ]
+            }
+        },
+        "LogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": "exfiltration",
+                "RetentionInDays": 7
+            }
+        }
+    },
+    "Outputs": {
+        "ExfiltrationAgentBucketx": {
+            "Export": {
+                "Name": "ExfiltrationAgentBucket"
+            },
+            "Value": {
+                "Ref": "DataS3Bucket"
+            }
+        }
+    }
+}
