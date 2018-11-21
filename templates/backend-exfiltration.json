@@ -26,6 +26,26 @@
                 "BucketName": "stationeering-exfiltration-data",
                 "VersioningConfiguration": {
                     "Status": "Enabled"
+                },
+                "NotificationConfiguration": {
+                    "TopicConfigurations": [
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Topic": {
+                                "Ref": "ExfiltrationNotificationTopic"
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "suffix",
+                                            "Value": "xml"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
                 }                
             }
         },
@@ -174,15 +194,64 @@
                 "LogGroupName": "exfiltration",
                 "RetentionInDays": 7
             }
+        },
+        "ExfiltrationNotificationTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "TopicName": "StationeersExfiltrationChangeNotification"
+            }
+        },
+        "ExfiltrationNotificationTopicPolicy": {
+            "Type": "AWS::SNS::TopicPolicy",
+            "DependsOn": [
+                "ExfiltrationNotificationTopic"
+            ],
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "ExfiltrationNotificationTopicPolicy",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "Statement-id",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "*"
+                            },
+                            "Action": "sns:Publish",
+                            "Resource": {
+                                "Ref": "ExfiltrationNotificationTopic"
+                            },
+                            "Condition": {
+                                "ArnLike": {
+                                    "aws:SourceArn": "arn:aws:s3:::stationeering-exfiltration-data"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Topics": [
+                    {
+                        "Ref": "ExfiltrationNotificationTopic"
+                    }
+                ]
+            }
         }
     },
     "Outputs": {
-        "ExfiltrationAgentBucketx": {
+        "ExfiltrationAgentBucket": {
             "Export": {
                 "Name": "ExfiltrationAgentBucket"
             },
             "Value": {
                 "Ref": "DataS3Bucket"
+            }
+        },
+        "ExfiltrationNotificationTopicArn": {
+            "Export": {
+                "Name": "ExfiltrationNotificationTopicArn"
+            },
+            "Value": {
+                "Ref": "ExfiltrationNotificationTopic"
             }
         }
     }
