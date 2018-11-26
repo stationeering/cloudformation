@@ -235,7 +235,167 @@
                     }
                 ]
             }
-        }
+        },
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "AllowLambdaToAssume",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "RunTask",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ecs:RunTask"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Ref": "ECSTask"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "iam:PassRole"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::ImportValue": "ECSTaskExecutionRoleARN"
+                                        },
+                                        {
+                                            "Fn::GetAtt": [
+                                                "ExfiltrationTaskRole",
+                                                "Arn"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": "LoggingPolicy",
+                        "PolicyDocument": {
+                            "Id": "LoggingPolicy",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "arn:aws:logs:*:*:*"
+                                    ]
+                                }
+                            ],
+                            "Version": "2012-10-17"
+                        }
+                    }
+                ]
+            }
+        },
+        "ExfiltrationInvokerLambda": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Handler": "index.handler",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                },
+                "Code": {
+                    "S3Bucket": {
+                        "Fn::ImportValue": "LambdaBucket"
+                    },
+                    "S3Key": "exfiltration-invoker-v01.zip"
+                },
+                "Runtime": "nodejs8.10",
+                "Timeout": "5",
+                "Environment": {
+                    "Variables": {
+                        "CONFIG": {
+                            "Fn::Sub": [
+                                "{ \"task\": \"${task}\", \"cluster\": \"${cluster}\", \"subnets\": [ \"${subnet1a}\", \"${subnet1b}\", \"${subnet1c}\" ] }",
+                                {
+                                    "task": {
+                                        "Ref": "ECSTask"
+                                    },
+                                    "cluster": {
+                                        "Fn::ImportValue": "BackEndClusterName"
+                                    },
+                                    "subnet1a": "subnet-10bd2f58",
+                                    "subnet1b": "subnet-ddb27e87",
+                                    "subnet1c": "subnet-d7ee6cb1"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "LambdaLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Sub": [
+                        "/aws/lambda/${functionName}",
+                        {
+                            "functionName": {
+                                "Ref": "ExfiltrationInvokerLambda"
+                            }
+                        }
+                    ]
+                },
+                "RetentionInDays": 7
+            }
+        },
+        "AllowVersionParserToInvoke": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": "AllowVersionParserToInvokeExfiltrationInvokerLambda",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "lambda:InvokeFunction"
+                    ],
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "ExfiltrationInvokerLambda",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "Roles": [
+                {
+                  "Fn::ImportValue": "VersionParserLambdaExecutionRole"
+                }
+              ]
+            }
+          }
     },
     "Outputs": {
         "ExfiltrationAgentBucket": {
