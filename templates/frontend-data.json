@@ -67,6 +67,20 @@
         }
       }
     },
+    "S3LogBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "stationeering-logs-data",
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "ExpirationInDays": 90,
+              "Status": "Enabled"
+            }
+          ]
+        }
+      }
+    },
     "CloudFrontOAI": {
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
@@ -141,6 +155,29 @@
         }
       }
     },
+    "S3LogCloudFrontPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "S3LogBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2008-10-17",
+          "Id": "PolicyToPermitCloudFrontFullAccess",
+          "Statement": [
+            {
+              "Sid": "awslogsdelivery",
+              "Effect": "Allow",
+              "Principal": {
+                  "CanonicalUser": "c4c1ede66af53448b93c283ce9448c4ba468c9432aa01d700d3878632f77d2d0"
+              },
+              "Action": "s3:*",
+              "Resource": { "Fn::Sub": [ "arn:aws:s3:::${BucketName}/*", { "BucketName": { "Ref": "S3LogBucket" } } ] }
+            }
+          ]
+        }
+      }
+    },
     "CloudFrontDistribution": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
@@ -210,6 +247,10 @@
             "AcmCertificateArn": {
               "Ref": "CertificateARN"
             }
+          },
+          "Logging": {
+            "Bucket": { "Fn::GetAtt": [ "S3LogBucket", "DomainName" ] },
+            "Prefix": "data/"
           }
         }
       }
