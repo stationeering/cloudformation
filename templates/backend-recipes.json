@@ -217,10 +217,7 @@
                         "KeyType": "RANGE"
                     }
                 ],
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": "1",
-                    "WriteCapacityUnits": "2"
-                },
+                "BillingMode": "PAY_PER_REQUEST",
                 "TableName": "Recipes",
                 "PointInTimeRecoverySpecification": {
                     "PointInTimeRecoveryEnabled": true
