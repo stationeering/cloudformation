@@ -1,0 +1,147 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Stack for fetching of steam news.",
+    "Resources": {
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "AllowLambdaToAssume",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "S3Access",
+                        "PolicyDocument": {
+                            "Id": "S3Policy",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "s3:GetObject",
+                                        "s3:PutObject"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::Sub": [
+                                                "arn:aws:s3:::${BucketName}/news/*",
+                                                {
+                                                    "BucketName": {
+                                                        "Fn::ImportValue": "FrontendDataBucket"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "Effect": "Allow"
+                                },
+                                {
+                                  "Action": [
+                                    "s3:ListBucket"
+                                  ],
+                                  "Resource": [
+                                    {
+                                      "Fn::Sub": [
+                                        "arn:aws:s3:::${BucketName}",
+                                        {
+                                          "BucketName": {
+                                            "Fn::ImportValue": "FrontendDataBucket"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Effect": "Allow"
+                                }
+                            ]
+                        }
+                    },                
+                    {
+                        "PolicyName": "LoggingPolicy",
+                        "PolicyDocument": {
+                            "Id": "LoggingPolicy",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": [
+                                        "arn:aws:logs:*:*:*"
+                                    ]
+                                }
+                            ],
+                            "Version": "2012-10-17"
+                        }
+                    }
+                ]
+            }
+        },
+        "NewsLambda": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Handler": "index.handler",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                },
+                "Code": {
+                    "S3Bucket": {
+                        "Fn::ImportValue": "LambdaBucket"
+                    },
+                    "S3Key": "news-v04.zip"
+                },
+                "Runtime": "nodejs8.10",
+                "Timeout": "300",
+                "MemorySize": "512"
+            }
+        },
+        "LambdaSchedule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "ScheduledRule",
+                "ScheduleExpression": "rate(1 hour)",
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "NewsLambda",
+                                "Arn"
+                            ]
+                        },
+                        "Id": "TargetFunctionV1"
+                    }
+                ]
+            }
+        },
+        "LambdaLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Sub": [
+                        "/aws/lambda/${functionName}",
+                        {
+                            "functionName": {
+                                "Ref": "NewsLambda"
+                            }
+                        }
+                    ]
+                },
+                "RetentionInDays": 7
+            }
+        }
+    }
+}
